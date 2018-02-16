@@ -3,10 +3,9 @@ configFile=~/.config/hypixel-cli
 hypixelURL="https://api.hypixel.net/"
 
 lookupPlayer() {
-  lookupValues=".player.uuid .player.karma .player.knownAliases .player.rank .player.monthlyPackageRank .player.newPackageRank .player.oldPackageRank .player.userLanguage .player.mostRecentGameType"
+  lookupValues=".player.uuid .player.karma .player.mcVersionRp .player.knownAliases .player.rank .player.monthlyPackageRank .player.newPackageRank .player.oldPackageRank .player.userLanguage .player.mostRecentGameType"
 
   requestURL=$hypixelURL"player?key="$key"&name="$1 # Build the request URL.
-  echo $requestURL # TODO: Remove debug.
   playerJSON=$(curl -s $requestURL) # Get the JSON from the API.
   identifier=$(jq -r '"\(.player.displayname) | \(.player.uuid)"' <<<"$playerJSON") # Get the player's displayname and UUID.
   echo $identifier
@@ -17,6 +16,7 @@ lookupPlayer() {
     valueName=${valueName^^}
     valueData=$(jq -r "$value" <<<"$playerJSON") # Print each JSON value in lookupValues.
     if [ "$valueData" != "null" ]; then # Hide any results that are null.
+      valueData=$(echo "$valueData" | tr -d '\n ')
       echo "$valueName - $valueData"
     fi
   done

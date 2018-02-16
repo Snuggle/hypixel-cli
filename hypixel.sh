@@ -2,14 +2,27 @@
 configFile=~/.config/hypixel-cli
 hypixelURL="https://api.hypixel.net/"
 
+getRank() {
+  rankLocations=".player.oldPackageRank .player.newPackageRank .player.monthlyPackageRank .player.rank"
+  actualRank="Non"
+  for value in $rankLocations; do
+    tempRank=$(jq -r "$value" <<<"$playerJSON")
+    if [ "$tempRank" != "null" ] && [ "$tempRank" != "NORMAL" ]; then
+      actualRank=$tempRank
+    fi
+  done
+}
+
 lookupPlayer() {
-  lookupValues=".player.uuid .player.karma .player.mcVersionRp .player.knownAliases .player.rank .player.monthlyPackageRank .player.newPackageRank .player.oldPackageRank .player.userLanguage .player.mostRecentGameType"
+  lookupValues=".player.uuid .player.prefix .player.karma .player.mcVersionRp .player.knownAliases .player.rank .player.monthlyPackageRank .player.newPackageRank .player.oldPackageRank .player.userLanguage .player.mostRecentGameType"
 
   requestURL=$hypixelURL"player?key="$key"&name="$1 # Build the request URL.
   playerJSON=$(curl -s $requestURL) # Get the JSON from the API.
-  identifier=$(jq -r '"\(.player.displayname) | \(.player.uuid)"' <<<"$playerJSON") # Get the player's displayname and UUID.
-  echo $identifier
-  echo ${identifier//?/―} # Print an underline.
+  displayName=$(jq -r '.player.displayname' <<<"$playerJSON") # Get the player's displayname and UUID.
+  getRank
+  playerTitle="[$actualRank] $displayName"
+  echo "$playerTitle"
+  echo ${playerTitle//?/―} # Print an underline.
 
   for value in $lookupValues; do
     valueName=${value##*.}

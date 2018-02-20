@@ -1,0 +1,12 @@
+{
+  "NON": "\\e[38;5;245m",
+  "VIP": "\\e[38;5;82m[VIP] ",
+  "VIP_PLUS": "\\e[38;5;82m[VIP\\e[38;5;214m+\\e[38;5;82m] ",
+  "MVP": "\\e[38;5;45m[MVP] ",
+  "MVP_PLUS": "\\e[38;5;122m[MVP\\e[38;5;203m+\\e[38;5;122m] ",
+  "SUPERSTAR": "\\e[38;5;214m[MVP\\e[38;5;203m++\\e[38;5;214m] ",
+  "YOUTUBER": "\\e[38;5;203m[\\e[97mYOUTUBE\\e[38;5;203m] ",
+  "HELPER": "\\e[38;5;105m[HELPER] ",
+  "MODERATOR": "\\e[38;5;28m[MODERATOR] ",
+  "ADMIN": "\\e[38;5;203m[ADMIN] "
+}

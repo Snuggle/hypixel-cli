@@ -1,5 +1,5 @@
 #!/bin/bash
-configFile=~/.config/hypixel-cli
+installationDir=~/.config/hypixel-cli
 hypixelURL="https://api.hypixel.net/"
 showColor=true
 
@@ -12,48 +12,12 @@ getRank() {
     fi
   done
 
-  # Convert PLUS to +'s! For example, MVP_PLUS -> MVP+
-  if [ "$actualRank" == "SUPERSTAR" ]; then
-    actualRank="MVP++"
-  fi
-  if [[ "$actualRank" = *"_PLUS"* ]]; then
-    actualRank="${actualRank%$"_PLUS"}+"
-  fi
-
   rawActualRank="$actualRank" # Save uncoloured string for later.
 
   # Now add colour!
   if [[ $showColor == true ]]; then
-    if [[ $actualRank == "" ]]; then
-      actualRank="\e[38;5;245m"
-    fi
-    if [[ $actualRank == "VIP" ]]; then
-      actualRank="\e[38;5;82m[VIP] "
-    fi
-    if [[ $actualRank == "VIP+" ]]; then
-      actualRank="\e[38;5;82m[VIP\e[38;5;214m+\e[38;5;82m] "
-    fi
-    if [[ $actualRank == "MVP" ]]; then
-      actualRank="\e[38;5;45m[MVP] "
-    fi
-    if [[ $actualRank == "MVP+" ]]; then
-      actualRank="\e[38;5;122m[MVP\e[38;5;203m+\e[38;5;122m] "
-    fi
-    if [[ $actualRank == "MVP++" ]]; then
-      actualRank="\e[38;5;214m[MVP\e[38;5;203m++\e[38;5;214m] "
-    fi
-    if [[ $actualRank == "YOUTUBER" ]]; then
-      actualRank="\e[38;5;203m[\e[97mYOUTUBE\e[38;5;203m] "
-    fi
-    if [[ $actualRank == "HELPER" ]]; then
-      actualRank="\e[38;5;105m[HELPER] "
-    fi
-    if [[ $actualRank == "MODERATOR" ]]; then
-      actualRank="\e[38;5;28m[MODERATOR] "
-    fi
-    if [[ $actualRank == "ADMIN" ]]; then
-      actualRank="\e[38;5;203m[ADMIN] "
-    fi
+    rankJSON=$(<$installationDir/ranks.json) # Read ranks.json into variable.
+    actualRank=$(jq -r ".$actualRank" <<<"$rankJSON") # Find appropriate coloured string.
   else
     actualRank="$actualRank "
   fi
@@ -87,12 +51,12 @@ lookupPlayer() {
 
 }
 
-if [ ! -f "$configFile" ]; then
-  echo "This is the first time running hypixel-cli! Please enter your API key and it'll be saved in \"$configFile\"."
+if [ ! -f "$installationDir/config" ]; then
+  echo "This is the first time running hypixel-cli! Please enter your API key and it'll be saved in \"$installationDir/config\"."
   read key
-  echo "$key" > "$configFile" # Write API key to file.
+  echo "$key" > "$installationDir/config" # Write API key to file.
 else
-  key=$(cat "$configFile") # Get API key.
+  key=$(cat "$installationDir/config") # Get API key.
   if [ "$1" == "player" ] || [ "$#" == 1 ]; then # If "hypixel player[...]" or one argument passed.
     for last; do true; done # Get the last argument passed. (https://stackoverflow.com/questions/1853946/getting-the-last-argument-passed-to-a-shell-script)
     lookupPlayer $last

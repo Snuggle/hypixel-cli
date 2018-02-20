@@ -41,7 +41,7 @@ lookupPlayer() {
 
   for value in $lookupValues; do
     valueName=${value##*.}
-    valueName=${valueName^^}
+    valueName=${valueName}
     valueData=$(jq -r "$value" <<<"$playerJSON") # Print each JSON value in lookupValues.
     if [ "$valueData" != "null" ]; then # Hide any results that are null.
       valueData=$(echo "$valueData" | tr -d '\n ')
